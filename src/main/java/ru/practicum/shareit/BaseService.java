@@ -1,11 +1,11 @@
 package ru.practicum.shareit;
 
-public interface BaseService<CreateDto, UpdateDto, ResponseDto> {
-    ResponseDto create(CreateDto dto);
+public interface BaseService<C, U, R> {
+    R create(C dto);
 
-    ResponseDto findById(long id);
+    R findById(long id);
 
-    ResponseDto update(UpdateDto dto);
+    R update(U dto);
 
     void delete(long id);
 }

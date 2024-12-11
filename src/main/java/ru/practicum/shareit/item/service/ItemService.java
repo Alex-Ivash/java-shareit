@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface ItemService extends BaseService<ItemRequestCreateDto, ItemRequestUpdateDto, ItemResponseDto> {
     List<ItemFromUserDto> findAllItemsFromUser(long userId);
+
     List<ItemResponseDto> search(String text);
 }
