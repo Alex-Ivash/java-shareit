@@ -4,15 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.PermissionDeniedException;
-import ru.practicum.shareit.item.dto.request.create.ItemRequestCreateDto;
-import ru.practicum.shareit.item.dto.request.create.ItemRequestCreateDtoMapper;
-import ru.practicum.shareit.item.dto.request.update.ItemRequestUpdateDto;
-import ru.practicum.shareit.item.dto.request.update.ItemRequestUpdateDtoMapper;
-import ru.practicum.shareit.item.dto.response.ItemFromUserDto;
-import ru.practicum.shareit.item.dto.response.ItemFromUserDtoMapper;
-import ru.practicum.shareit.item.dto.response.ItemResponseDto;
-import ru.practicum.shareit.item.dto.response.ItemResponseDtoMapper;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -24,42 +17,38 @@ import java.util.Objects;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-    private final ItemRequestUpdateDtoMapper itemRequestUpdateDtoMapper;
-    private final ItemRequestCreateDtoMapper itemRequestCreateDtoMapper;
-    private final ItemResponseDtoMapper itemResponseDtoMapper;
-    private final ItemFromUserDtoMapper itemFromUserDtoMapper;
-
+    private final ItemDtoMapper itemDtoMapper;
 
     @Override
-    public ItemResponseDto create(ItemRequestCreateDto itemRequestCreateDto) {
-        long ownerId = itemRequestCreateDto.getOwnerId();
+    public ItemDto create(ItemCreateDto dto) {
+        long ownerId = dto.getOwnerId();
 
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id=%d не найден".formatted(ownerId)));
 
-        Item createdItem = itemRepository.create(itemRequestCreateDtoMapper.toEntity(itemRequestCreateDto));
+        Item createdItem = itemRepository.create(itemDtoMapper.toEntity(dto));
 
-        return itemResponseDtoMapper.fromEntity(createdItem);
+        return itemDtoMapper.toItemDto(createdItem);
     }
 
     @Override
-    public ItemResponseDto findById(long id) {
-        return itemResponseDtoMapper.fromEntity(itemRepository.findById(id)
+    public ItemDto findById(long id) {
+        return itemDtoMapper.toItemDto(itemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Вещ с id=%d не найдена".formatted(id))));
     }
 
     @Override
-    public ItemResponseDto update(ItemRequestUpdateDto dto) {
+    public ItemDto update(ItemUpdateDto dto) {
         Item foundItem = itemRepository.findById(dto.getId())
                 .orElseThrow(() -> new NotFoundException("Вещ с id=%d не найдена".formatted(dto.getId())));
 
-        if (!Objects.equals(dto.getCurrentUserId(), foundItem.getOwnerId())) {
+        if (!Objects.equals(dto.getCurrentUser(), foundItem.getOwnerId())) {
             throw new PermissionDeniedException("Изменение параметров вещи доступно только владельцу вещи");
         }
 
-        Item updatedItem = itemRequestUpdateDtoMapper.returnUpdatedFromDtoEntity(foundItem, dto);
+        Item updatedItem = itemDtoMapper.returnUpdatedEntityFromDto(foundItem, dto);
 
-        return itemResponseDtoMapper.fromEntity(itemRepository.update(updatedItem));
+        return itemDtoMapper.toItemDto(itemRepository.update(updatedItem));
     }
 
     @Override
@@ -68,20 +57,20 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemFromUserDto> findAllItemsFromUser(long userId) {
+    public List<ItemShortDto> findAllItemsFromUser(long userId) {
         List<Item> items = itemRepository.findAllItemsFromUser(userId);
 
         return items.stream()
-                .map(itemFromUserDtoMapper::fromEntity)
+                .map(itemDtoMapper::toItemShortDto)
                 .toList();
     }
 
     @Override
-    public List<ItemResponseDto> search(String text) {
+    public List<ItemDto> search(String text) {
         List<Item> items = itemRepository.search(text);
 
         return items.stream()
-                .map(itemResponseDtoMapper::fromEntity)
+                .map(itemDtoMapper::toItemDto)
                 .toList();
     }
 }

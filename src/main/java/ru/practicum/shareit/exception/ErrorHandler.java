@@ -29,7 +29,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflictErrors(final ConflictException e) {
+    public ErrorResponse handleConflictErrors(final EntityAlreadyExistsException e) {
         log.error(e.getMessage());
 
         return new ErrorResponse(e.getMessage());
@@ -44,7 +44,7 @@ public class ErrorHandler {
                 e.getBindingResult()
                         .getAllErrors()
                         .stream()
-                        .map(err -> ((FieldError) err).getField() + ":" + err.getDefaultMessage())
+                        .map(err -> ((FieldError) err).getField() + " " + err.getDefaultMessage())
                         .toArray(String[]::new)
         );
     }

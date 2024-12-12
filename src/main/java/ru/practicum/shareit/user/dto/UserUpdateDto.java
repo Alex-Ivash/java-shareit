@@ -1,14 +1,13 @@
-package ru.practicum.shareit.user.dto.request.update;
+package ru.practicum.shareit.user.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class UserRequestUpdateDto {
+public class UserUpdateDto {
     private Long id;
 
     @Email

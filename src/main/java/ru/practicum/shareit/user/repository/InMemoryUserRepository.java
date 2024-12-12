@@ -2,8 +2,8 @@ package ru.practicum.shareit.user.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.ConflictException;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.exception.EntityAlreadyExistsException;
+import ru.practicum.shareit.user.User;
 
 import java.util.*;
 
@@ -54,7 +54,7 @@ public class InMemoryUserRepository implements UserRepository {
 
     private void checkEmailForUniqueness(String email) {
         if (registeredEmails.contains(email)) {
-            throw new ConflictException("Пользователь с email=%s уже существует".formatted(email));
+            throw new EntityAlreadyExistsException("Пользователь с email=%s уже существует".formatted(email));
         }
 
         registeredEmails.add(email);

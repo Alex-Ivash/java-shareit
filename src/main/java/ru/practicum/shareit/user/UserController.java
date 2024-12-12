@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.controller;
+package ru.practicum.shareit.user;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -6,9 +6,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.request.create.UserRequestCreateDto;
-import ru.practicum.shareit.user.dto.request.update.UserRequestUpdateDto;
-import ru.practicum.shareit.user.dto.response.UserResponseDto;
+import ru.practicum.shareit.user.dto.UserCreateDto;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.service.UserService;
 
 /**
@@ -23,9 +23,9 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto create(@RequestBody @Valid UserRequestCreateDto userRequestCreateDto) {
-        log.info("Создание нового пользователя {}...", userRequestCreateDto);
-        UserResponseDto newUser = userService.create(userRequestCreateDto);
+    public UserDto create(@RequestBody @Valid UserCreateDto dto) {
+        log.info("Создание нового пользователя {}...", dto);
+        UserDto newUser = userService.create(dto);
         log.info("Пользователь создан => {}.", newUser);
 
         return newUser;
@@ -33,9 +33,9 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseDto findById(@PathVariable @Positive long userId) {
+    public UserDto findById(@PathVariable @Positive long userId) {
         log.info("Поиск пользователя c id={}...", userId);
-        UserResponseDto foundUser = userService.findById(userId);
+        UserDto foundUser = userService.findById(userId);
         log.info("Пользователь найден => {}.", foundUser);
 
         return foundUser;
@@ -43,13 +43,13 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserResponseDto update(
-            @RequestBody @Valid UserRequestUpdateDto userRequestUpdateDto,
+    public UserDto update(
+            @RequestBody @Valid UserUpdateDto dto,
             @PathVariable @Positive long userId
     ) {
-        userRequestUpdateDto.setId(userId);
-        log.info("Обновление данных {} пользователя с id={}...", userRequestUpdateDto, userId);
-        UserResponseDto updatedUser = userService.update(userRequestUpdateDto);
+        dto.setId(userId);
+        log.info("Обновление данных {} пользователя с id={}...", dto, userId);
+        UserDto updatedUser = userService.update(dto);
         log.info("Пользователь обновлен => {}.", updatedUser);
 
         return updatedUser;
