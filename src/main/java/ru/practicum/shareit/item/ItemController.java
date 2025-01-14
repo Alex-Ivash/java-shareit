@@ -10,7 +10,6 @@ import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemShortDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
-import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 
@@ -51,7 +50,7 @@ public class ItemController {
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
     public List<ItemDto> search(@RequestParam String text) {
-        log.info("Поиск вещей по запросу {}...", text);
+        log.info("Поиск вещей по запросу '{}'...", text);
         List<ItemDto> foundItems = itemService.search(text);
         log.info("Найдены вещи => {}.", foundItems);
 
@@ -76,7 +75,7 @@ public class ItemController {
             @RequestHeader("X-Sharer-User-Id") @Positive long userId
     ) {
         itemRequestUpdateDto.setId(itemId);
-        itemRequestUpdateDto.setCurrentUser(userId);
+        itemRequestUpdateDto.setCurrentUserId(userId);
         log.info("Обновление данных {} вещи с id={} пользователем с id={}...", itemRequestUpdateDto, itemId, userId);
         ItemDto updatedItem = itemService.update(itemRequestUpdateDto);
         log.info("Вещь обновлена => {}.", updatedItem);

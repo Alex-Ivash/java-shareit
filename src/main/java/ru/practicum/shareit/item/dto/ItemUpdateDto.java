@@ -16,5 +16,5 @@ public class ItemUpdateDto {
 
     private Boolean available;
 
-    private Long currentUser;
+    private Long currentUserId;
 }

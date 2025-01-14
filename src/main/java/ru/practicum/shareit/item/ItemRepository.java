@@ -1,0 +1,22 @@
+package ru.practicum.shareit.item;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemShortDto;
+
+import java.util.List;
+
+public interface ItemRepository extends JpaRepository<Item, Long> {
+    @Query("""
+    SELECT new ru.practicum.shareit.item.dto.ItemDto(it.id, it.name, it.description, it.available, it.owner.id)
+    FROM Item it
+    WHERE it.available = true AND 
+          (LOWER(it.name) LIKE LOWER(CONCAT('%', :text, '%')) OR 
+           LOWER(it.description) LIKE LOWER(CONCAT('%', :text, '%')))
+    """)
+    List<ItemDto> search(@Param("text") String text);
+
+    List<ItemShortDto> findAllByOwner_id(long userId);
+}
