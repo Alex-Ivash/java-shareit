@@ -15,6 +15,7 @@ public class UserDtoMapper {
 
     public User toEntity(UserUpdateDto dto) {
         User user = new User();
+
         user.setId(dto.getId());
         user.setEmail(dto.getEmail());
         user.setName(dto.getName());

@@ -1,17 +1,16 @@
 package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ItemShortDto {
+public class CommentCreateDto {
     @NotBlank
-    @Size(max = 255)
-    private String name;
+    private String text;
 
-    @NotBlank
-    private String description;
+    private Long itemId;
+
+    private Long authorId;
 }

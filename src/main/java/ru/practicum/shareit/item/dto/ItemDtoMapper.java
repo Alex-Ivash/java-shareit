@@ -1,8 +1,11 @@
 package ru.practicum.shareit.item.dto;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
+
+import java.util.List;
 
 @Component
 public class ItemDtoMapper {
@@ -11,21 +14,35 @@ public class ItemDtoMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable(),
-                1L
-//                item.getOwnerId()
+                item.getAvailable()
         );
     }
 
-    public ItemShortDto toItemShortDto(Item item) {
-        return new ItemShortDto(
+    public ItemExtendedDto toItemExtendedDto(Item item, List<CommentDto> comments) {
+        return new ItemExtendedDto(
+                item.getId(),
                 item.getName(),
-                item.getDescription()
+                item.getDescription(),
+                item.getAvailable(),
+                null, // в сервисе описал это странное действие
+                null, // в сервисе описал это странное действие
+                comments
+        );
+    }
+
+    public ItemInfoDto toItemInfoDto(Item item, List<CommentDto> comments, BookingShortDto bookingShortDto) {
+        return new ItemInfoDto(
+                item.getName(),
+                item.getDescription(),
+                bookingShortDto != null ? bookingShortDto.getLastBooking() : null,
+                bookingShortDto != null ? bookingShortDto.getNextBooking() : null,
+                comments
         );
     }
 
     public Item toEntity(ItemCreateDto dto, User owner) {
         Item item = new Item();
+
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
         item.setAvailable(dto.getAvailable());

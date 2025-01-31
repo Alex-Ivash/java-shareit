@@ -5,33 +5,29 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemCreateDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemShortDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.dto.*;
 
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping(path = "/items")
+@Validated
 public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ItemDto create(
-            @RequestBody @Valid ItemCreateDto itemRequestCreateDto,
+    public ItemDto createItem(
+            @RequestBody @Valid ItemCreateDto itemCreateDto,
             @RequestHeader("X-Sharer-User-Id") @Positive long userId
     ) {
-        log.info("Создание новой вещи {} пользователем с id={}...", itemRequestCreateDto, userId);
-        itemRequestCreateDto.setOwnerId(userId);
-        ItemDto newItem = itemService.create(itemRequestCreateDto);
+        log.info("Создание новой вещи {} пользователем с id={}...", itemCreateDto, userId);
+        itemCreateDto.setOwnerId(userId);
+        ItemDto newItem = itemService.createItem(itemCreateDto);
         log.info("Вещь создана => {}.", newItem);
 
         return newItem;
@@ -39,9 +35,9 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto findById(@PathVariable @Positive long itemId) {
+    public ItemExtendedDto findById(@PathVariable @Positive long itemId) {
         log.info("Поиск вещи c id={}...", itemId);
-        ItemDto foundItem = itemService.findById(itemId);
+        ItemExtendedDto foundItem = itemService.findById(itemId);
         log.info("Вещь найдена => {}.", foundItem);
 
         return foundItem;
@@ -59,9 +55,9 @@ public class ItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ItemShortDto> findAllItemsFromUser(@RequestHeader("X-Sharer-User-Id") @Positive long userId) {
+    public List<ItemInfoDto> findAllItemsFromOwner(@RequestHeader("X-Sharer-User-Id") @Positive long userId) {
         log.info("Поиск всех вещей пользователя c id={}...", userId);
-        List<ItemShortDto> foundItems = itemService.findAllItemsFromUser(userId);
+        List<ItemInfoDto> foundItems = itemService.findAllItemsFromOwner(userId);
         log.info("Вещи пользователя с id={} найдены => {}.", userId, foundItems);
 
         return foundItems;
@@ -70,14 +66,14 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public ItemDto update(
-            @RequestBody @Valid ItemUpdateDto itemRequestUpdateDto,
+            @RequestBody @Valid ItemUpdateDto itemUpdateDto,
             @PathVariable @Positive long itemId,
             @RequestHeader("X-Sharer-User-Id") @Positive long userId
     ) {
-        itemRequestUpdateDto.setId(itemId);
-        itemRequestUpdateDto.setCurrentUserId(userId);
-        log.info("Обновление данных {} вещи с id={} пользователем с id={}...", itemRequestUpdateDto, itemId, userId);
-        ItemDto updatedItem = itemService.update(itemRequestUpdateDto);
+        itemUpdateDto.setId(itemId);
+        itemUpdateDto.setCurrentUserId(userId);
+        log.info("Обновление данных {} вещи с id={} пользователем с id={}...", itemUpdateDto, itemId, userId);
+        ItemDto updatedItem = itemService.update(itemUpdateDto);
         log.info("Вещь обновлена => {}.", updatedItem);
 
         return updatedItem;
@@ -89,5 +85,21 @@ public class ItemController {
         log.info("Удаление пользователя с id={}...", itemId);
         itemService.delete(itemId);
         log.info("Пользователь с id={} удален.", itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto createComment(
+            @RequestBody @Valid CommentCreateDto commentCreateDto,
+            @RequestHeader("X-Sharer-User-Id") @Positive long userId,
+            @PathVariable @Positive long itemId
+    ) {
+        commentCreateDto.setAuthorId(userId);
+        commentCreateDto.setItemId(itemId);
+        log.info("Создание нового комментария {} пользователем с id={}...", commentCreateDto, userId);
+        CommentDto newComment = itemService.createComment(commentCreateDto);
+        log.info("Комментарий создан => {}.", newComment);
+
+        return newComment;
     }
 }

@@ -1,17 +1,12 @@
 package ru.practicum.shareit.user;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
