@@ -94,13 +94,13 @@ public class BookingServiceImpl implements BookingService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        return (switch (state) {
+        return ( switch (state) {
             case ALL -> bookingRepository.findAllByBooker_idOrderByStartDesc(userId);
             case CURRENT -> bookingRepository.findAllByBooker_idAndEndGreaterThanEqualOrderByStartDesc(userId, now);
             case PAST -> bookingRepository.findAllByBooker_idAndEndLessThanOrderByStartDesc(userId, now);
             case FUTURE -> bookingRepository.findAllByBooker_idAndStartGreaterThanOrderByStartDesc(userId, now);
             case WAITING, REJECTED -> bookingRepository.findAllByBooker_idAndStatusOrderByStartDesc(userId, state);
-        }).stream()
+        } ).stream()
                 .map(bookingDtoMapper::toBookingDto)
                 .toList();
     }
@@ -113,13 +113,13 @@ public class BookingServiceImpl implements BookingService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        return (switch (state) {
+        return ( switch (state) {
             case ALL -> bookingRepository.findAllByItem_owner_idOrderByStartDesc(userId);
             case CURRENT -> bookingRepository.findAllByItem_owner_idAndEndGreaterThanEqualOrderByStartDesc(userId, now);
             case PAST -> bookingRepository.findAllByItem_owner_idAndEndLessThanOrderByStartDesc(userId, now);
             case FUTURE -> bookingRepository.findAllByItem_owner_idAndStartGreaterThanOrderByStartDesc(userId, now);
             case WAITING, REJECTED -> bookingRepository.findAllByItem_owner_idAndStatusOrderByStartDesc(userId, state);
-        }).stream()
+        } ).stream()
                 .map(bookingDtoMapper::toBookingDto)
                 .toList();
     }
