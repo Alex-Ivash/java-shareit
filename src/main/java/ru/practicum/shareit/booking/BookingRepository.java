@@ -12,28 +12,28 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<BookingDto> findAllByBooker_idOrderByStartDesc(long bookerId);
+    List<Booking> findAllByBooker_idOrderByStartDesc(long bookerId);
 
-    List<BookingDto> findAllByItem_owner_idOrderByStartDesc(long ownerId);
-
-
-    List<BookingDto> findAllByBooker_idAndStatusOrderByStartDesc(long bookerId, BookingRequestState state);
-
-    List<BookingDto> findAllByItem_owner_idAndStatusOrderByStartDesc(long ownerId, BookingRequestState state);
+    List<Booking> findAllByItem_owner_idOrderByStartDesc(long ownerId);
 
 
-    List<BookingDto> findAllByBooker_idAndEndGreaterThanEqualOrderByStartDesc(long bookerId, LocalDateTime end);
+    List<Booking> findAllByBooker_idAndStatusOrderByStartDesc(long bookerId, BookingRequestState state);
 
-    List<BookingDto> findAllByBooker_idAndEndLessThanOrderByStartDesc(long bookerId, LocalDateTime end);
-
-    List<BookingDto> findAllByBooker_idAndStartGreaterThanOrderByStartDesc(long bookerId, LocalDateTime start);
+    List<Booking> findAllByItem_owner_idAndStatusOrderByStartDesc(long ownerId, BookingRequestState state);
 
 
-    List<BookingDto> findAllByItem_owner_idAndEndGreaterThanEqualOrderByStartDesc(long ownerId, LocalDateTime end);
+    List<Booking> findAllByBooker_idAndEndGreaterThanEqualOrderByStartDesc(long bookerId, LocalDateTime end);
 
-    List<BookingDto> findAllByItem_owner_idAndEndLessThanOrderByStartDesc(long ownerId, LocalDateTime end);
+    List<Booking> findAllByBooker_idAndEndLessThanOrderByStartDesc(long bookerId, LocalDateTime end);
 
-    List<BookingDto> findAllByItem_owner_idAndStartGreaterThanOrderByStartDesc(long ownerId, LocalDateTime start);
+    List<Booking> findAllByBooker_idAndStartGreaterThanOrderByStartDesc(long bookerId, LocalDateTime start);
+
+
+    List<Booking> findAllByItem_owner_idAndEndGreaterThanEqualOrderByStartDesc(long ownerId, LocalDateTime end);
+
+    List<Booking> findAllByItem_owner_idAndEndLessThanOrderByStartDesc(long ownerId, LocalDateTime end);
+
+    List<Booking> findAllByItem_owner_idAndStartGreaterThanOrderByStartDesc(long ownerId, LocalDateTime start);
 
 
     @Query("""

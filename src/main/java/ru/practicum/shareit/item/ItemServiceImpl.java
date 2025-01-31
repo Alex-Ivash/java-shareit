@@ -92,6 +92,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemInfoDto> findAllItemsFromOwner(long ownerId) {
         List<Item> foundItems = itemRepository.findAllByOwner_id(ownerId);
+        /*
+            Тут с методом ниже интересная штука - судя по логам, поля сущности автора и айтема не выбираются в запросе(только их id), хотя по умолчанию выгрузка айтема и автора немедленная,
+            но при этом распределение комментов к айтемам в мапе работает и имя автора коммента отображается в итоговом результате метода.
+            Тут какой-то кэш используется? Не вполне понятно, откуда тогда берутся данные автора, чтобы получить его имя, например
+         */
         List<Comment> comments = commentRepository.findAllByItemIn(foundItems);
         List<BookingShortDto> bookingLastAndPastDates = bookingRepository.findLastAndNextBookingDatesFromItems(LocalDateTime.now(), foundItems);
 

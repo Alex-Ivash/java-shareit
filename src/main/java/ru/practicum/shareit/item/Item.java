@@ -24,7 +24,7 @@ public class Item {
     @Column(nullable = false)
     private Boolean available;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private User owner;
 }

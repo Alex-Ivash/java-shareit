@@ -25,8 +25,8 @@ public class ItemController {
             @RequestBody @Valid ItemCreateDto itemCreateDto,
             @RequestHeader("X-Sharer-User-Id") @Positive long userId
     ) {
-        log.info("Создание новой вещи {} пользователем с id={}...", itemCreateDto, userId);
         itemCreateDto.setOwnerId(userId);
+        log.info("Создание новой вещи {} пользователем с id={}...", itemCreateDto, userId);
         ItemDto newItem = itemService.createItem(itemCreateDto);
         log.info("Вещь создана => {}.", newItem);
 
