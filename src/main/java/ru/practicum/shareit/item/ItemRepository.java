@@ -11,8 +11,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("""
             SELECT new ru.practicum.shareit.item.dto.ItemDto(it.id, it.name, it.description, it.available)
             FROM Item it
-            WHERE it.available = true AND 
-                  (LOWER(it.name) LIKE LOWER(CONCAT('%', :text, '%')) OR 
+            WHERE it.available = true AND
+                  (LOWER(it.name) LIKE LOWER(CONCAT('%', :text, '%')) OR
                    LOWER(it.description) LIKE LOWER(CONCAT('%', :text, '%')))
             """)
     List<ItemDto> search(@Param("text") String text);
