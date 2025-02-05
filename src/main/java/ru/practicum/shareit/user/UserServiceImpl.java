@@ -23,22 +23,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findById(long id) {
-        return userDtoMapper.toUserDto(userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id=%d не найден".formatted(id))));
+        return userDtoMapper.toUserDto(findUser(id));
     }
 
     @Override
     public UserDto update(UserUpdateDto dto) {
-        User foundUser = userRepository.findById(dto.getId())
-                .orElseThrow(() -> new NotFoundException("Пользователь с id=%d не найден".formatted(dto.getId())));
-
-        userDtoMapper.updateEntityFromDto(foundUser, dto);
-
-        return userDtoMapper.toUserDto(userRepository.save(foundUser));
+        return userDtoMapper.toUserDto(
+                userRepository.save(
+                        userDtoMapper.getUpdatedEntityFromDto(
+                                findUser(dto.getId()),
+                                dto
+                        )
+                )
+        );
     }
 
     @Override
     public void delete(long id) {
         userRepository.deleteById(id);
+    }
+
+    private User findUser(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id=%d не найден".formatted(userId)));
     }
 }

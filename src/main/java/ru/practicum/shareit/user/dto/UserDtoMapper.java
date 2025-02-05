@@ -31,7 +31,7 @@ public class UserDtoMapper {
         return user;
     }
 
-    public void updateEntityFromDto(User entity, UserUpdateDto dto) {
+    public User getUpdatedEntityFromDto(User entity, UserUpdateDto dto) {
         if (dto.getName() != null) {
             entity.setName(dto.getName());
         }
@@ -39,5 +39,7 @@ public class UserDtoMapper {
         if (dto.getEmail() != null) {
             entity.setEmail((dto.getEmail()));
         }
+
+        return entity;
     }
 }

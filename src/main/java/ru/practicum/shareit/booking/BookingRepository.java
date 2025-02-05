@@ -13,26 +13,26 @@ import java.util.List;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByBooker_idOrderByStartDesc(long bookerId);
 
-    List<Booking> findAllByItem_owner_idOrderByStartDesc(long ownerId);
+    List<Booking> findAllByItem_Owner_IdOrderByStartDesc(long ownerId);
 
 
-    List<Booking> findAllByBooker_idAndStatusOrderByStartDesc(long bookerId, BookingRequestState state);
+    List<Booking> findAllByBooker_IdAndStatusOrderByStartDesc(long bookerId, BookingRequestState state);
 
-    List<Booking> findAllByItem_owner_idAndStatusOrderByStartDesc(long ownerId, BookingRequestState state);
-
-
-    List<Booking> findAllByBooker_idAndEndGreaterThanEqualOrderByStartDesc(long bookerId, LocalDateTime end);
-
-    List<Booking> findAllByBooker_idAndEndLessThanOrderByStartDesc(long bookerId, LocalDateTime end);
-
-    List<Booking> findAllByBooker_idAndStartGreaterThanOrderByStartDesc(long bookerId, LocalDateTime start);
+    List<Booking> findAllByItem_Owner_IdAndStatusOrderByStartDesc(long ownerId, BookingRequestState state);
 
 
-    List<Booking> findAllByItem_owner_idAndEndGreaterThanEqualOrderByStartDesc(long ownerId, LocalDateTime end);
+    List<Booking> findAllByBooker_IdAndEndGreaterThanEqualOrderByStartDesc(long bookerId, LocalDateTime end);
 
-    List<Booking> findAllByItem_owner_idAndEndLessThanOrderByStartDesc(long ownerId, LocalDateTime end);
+    List<Booking> findAllByBooker_IdAndEndLessThanOrderByStartDesc(long bookerId, LocalDateTime end);
 
-    List<Booking> findAllByItem_owner_idAndStartGreaterThanOrderByStartDesc(long ownerId, LocalDateTime start);
+    List<Booking> findAllByBooker_IdAndStartGreaterThanOrderByStartDesc(long bookerId, LocalDateTime start);
+
+
+    List<Booking> findAllByItem_Owner_IdAndEndGreaterThanEqualOrderByStartDesc(long ownerId, LocalDateTime end);
+
+    List<Booking> findAllByItem_Owner_IdAndEndLessThanOrderByStartDesc(long ownerId, LocalDateTime end);
+
+    List<Booking> findAllByItem_Owner_IdAndStartGreaterThanOrderByStartDesc(long ownerId, LocalDateTime start);
 
 
     @Query("""

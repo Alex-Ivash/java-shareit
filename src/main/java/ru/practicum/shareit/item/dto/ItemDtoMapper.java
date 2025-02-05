@@ -51,7 +51,7 @@ public class ItemDtoMapper {
         return item;
     }
 
-    public void updateEntityFromDto(Item entity, ItemUpdateDto dto) {
+    public Item getUpdatedEntityFromDto(Item entity, ItemUpdateDto dto) {
         if (dto.getName() != null) {
             entity.setName(dto.getName());
         }
@@ -63,5 +63,7 @@ public class ItemDtoMapper {
         if (dto.getAvailable() != null) {
             entity.setAvailable(dto.getAvailable());
         }
+
+        return entity;
     }
 }

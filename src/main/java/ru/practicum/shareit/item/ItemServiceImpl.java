@@ -27,61 +27,39 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto createItem(ItemCreateDto dto) {
-        long ownerId = dto.getOwnerId();
-
-        User owner = userRepository.findById(ownerId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id=%d не найден".formatted(ownerId)));
-
-        Item createdItem = itemRepository.save(itemDtoMapper.toEntity(dto, owner));
-
-        return itemDtoMapper.toItemDto(createdItem);
+        return itemDtoMapper.toItemDto(
+                itemRepository.save(
+                        itemDtoMapper.toEntity(dto, findUser(dto.getOwnerId()))
+                )
+        );
     }
 
     @Override
     public CommentDto createComment(CommentCreateDto dto) {
-        long authorId = dto.getAuthorId();
-        long itemId = dto.getItemId();
-
-        User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id=%d не найден".formatted(authorId)));
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NotFoundException("Вещь с id=%d не найдена".formatted(itemId)));
+        User author = findUser(dto.getAuthorId());
+        Item item = findItem(dto.getItemId());
 
         if (!bookingRepository.existsByBookerAndItemAndStatusAndEndLessThan(author, item, BookingStatus.APPROVED, LocalDateTime.now())) {
             throw new EntityAvailableException("Комментарий к вещи может оставить только пользователь, бравший её в аренду");
         }
 
-        Comment createdComment = commentRepository.save(commentDtoMapper.toEntity(dto, item, author));
-
-        return commentDtoMapper.toCommentDto(createdComment);
+        return commentDtoMapper.toCommentDto(commentRepository.save(commentDtoMapper.toEntity(dto, item, author)));
     }
 
-    /*
-        В тестах в этом кейсе зачем-то нужны даты последнего и следующего бронирования.
-        Но при этом ожидается, что они оба null при том, что ожидается, что будет коммент по этой вещи, те было бронирование и дата последнего в таком кейсе по любому будет.
-        В общем, добавил бесполезные 2 поля с датами в DTO, чтобы прийти тесты API
-     */
     @Override
     public ItemExtendedDto findById(long id) {
-        Item foundItem = itemRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Вещь с id=%d не найдена".formatted(id)));
-        List<CommentDto> comments = commentRepository.findAllByItem_id(id);
-
-        return itemDtoMapper.toItemExtendedDto(foundItem, comments);
+        return itemDtoMapper.toItemExtendedDto(findItem(id), commentRepository.findAllByItem_id(id));
     }
 
     @Override
     public ItemDto update(ItemUpdateDto dto) {
-        Item foundItem = itemRepository.findById(dto.getId())
-                .orElseThrow(() -> new NotFoundException("Вещь с id=%d не найдена".formatted(dto.getId())));
+        Item foundItem = findItem(dto.getId());
 
         if (!Objects.equals(dto.getCurrentUserId(), foundItem.getOwner().getId())) {
             throw new PermissionDeniedException("Изменение параметров вещи доступно только владельцу вещи");
         }
 
-        itemDtoMapper.updateEntityFromDto(foundItem, dto);
-
-        return itemDtoMapper.toItemDto(itemRepository.save(foundItem));
+        return itemDtoMapper.toItemDto(itemRepository.save(itemDtoMapper.getUpdatedEntityFromDto(foundItem, dto)));
     }
 
     @Override
@@ -91,12 +69,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemInfoDto> findAllItemsFromOwner(long ownerId) {
-        List<Item> foundItems = itemRepository.findAllByOwner_id(ownerId);
-        /*
-            Тут с методом ниже интересная штука - судя по логам, поля сущности автора и айтема не выбираются в запросе(только их id), хотя по умолчанию выгрузка айтема и автора немедленная,
-            но при этом распределение комментов к айтемам в мапе работает и имя автора коммента отображается в итоговом результате метода.
-            Тут какой-то кэш используется? Не вполне понятно, откуда тогда берутся данные автора, чтобы получить его имя, например
-         */
+        List<Item> foundItems = itemRepository.findAllByOwner_Id(ownerId);
         List<Comment> comments = commentRepository.findAllByItemIn(foundItems);
         List<BookingShortDto> bookingLastAndPastDates = bookingRepository.findLastAndNextBookingDatesFromItems(LocalDateTime.now(), foundItems);
 
@@ -124,5 +97,15 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return itemRepository.search(text);
+    }
+
+    private User findUser(long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id=%d не найден".formatted(userId)));
+    }
+
+    private Item findItem(long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Вещь с id=%d не найдена".formatted(itemId)));
     }
 }
