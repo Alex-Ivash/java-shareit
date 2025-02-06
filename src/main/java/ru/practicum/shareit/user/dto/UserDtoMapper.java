@@ -15,6 +15,7 @@ public class UserDtoMapper {
 
     public User toEntity(UserUpdateDto dto) {
         User user = new User();
+
         user.setId(dto.getId());
         user.setEmail(dto.getEmail());
         user.setName(dto.getName());
@@ -30,17 +31,15 @@ public class UserDtoMapper {
         return user;
     }
 
-    public User returnUpdatedEntityFromDto(User entity, UserUpdateDto dto) {
-        User updatedEntity = this.toEntity(dto);
-
-        if (updatedEntity.getName() == null) {
-            updatedEntity.setName(entity.getName());
+    public User getUpdatedEntityFromDto(User entity, UserUpdateDto dto) {
+        if (dto.getName() != null) {
+            entity.setName(dto.getName());
         }
 
-        if (updatedEntity.getEmail() == null) {
-            updatedEntity.setEmail((entity.getEmail()));
+        if (dto.getEmail() != null) {
+            entity.setEmail((dto.getEmail()));
         }
 
-        return updatedEntity;
+        return entity;
     }
 }

@@ -1,7 +1,11 @@
 package ru.practicum.shareit.item.dto;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.user.User;
+
+import java.util.List;
 
 @Component
 public class ItemDtoMapper {
@@ -10,54 +14,56 @@ public class ItemDtoMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.getAvailable(),
-                item.getOwnerId()
+                item.getAvailable()
         );
     }
 
-    public ItemShortDto toItemShortDto(Item item) {
-        return new ItemShortDto(
+    public ItemExtendedDto toItemExtendedDto(Item item, List<CommentDto> comments) {
+        return new ItemExtendedDto(
+                item.getId(),
                 item.getName(),
-                item.getDescription()
+                item.getDescription(),
+                item.getAvailable(),
+                null, // в сервисе описал это странное действие
+                null, // в сервисе описал это странное действие
+                comments
         );
     }
 
-    public Item toEntity(ItemCreateDto dto) {
+    public ItemInfoDto toItemInfoDto(Item item, List<CommentDto> comments, BookingShortDto bookingShortDto) {
+        return new ItemInfoDto(
+                item.getName(),
+                item.getDescription(),
+                bookingShortDto != null ? bookingShortDto.getLastBooking() : null,
+                bookingShortDto != null ? bookingShortDto.getNextBooking() : null,
+                comments
+        );
+    }
+
+    public Item toEntity(ItemCreateDto dto, User owner) {
         Item item = new Item();
+
         item.setName(dto.getName());
         item.setDescription(dto.getDescription());
         item.setAvailable(dto.getAvailable());
-        item.setOwnerId(dto.getOwnerId());
+        item.setOwner(owner);
 
         return item;
     }
 
-    public Item toEntity(ItemUpdateDto dto) {
-        Item item = new Item();
-        item.setId(dto.getId());
-        item.setName(dto.getName());
-        item.setDescription(dto.getDescription());
-        item.setAvailable(dto.getAvailable());
-        item.setOwnerId(dto.getCurrentUser());
-
-        return item;
-    }
-
-    public Item returnUpdatedEntityFromDto(Item entity, ItemUpdateDto dto) {
-        Item updatedEntity = this.toEntity(dto);
-
-        if (updatedEntity.getName() == null) {
-            updatedEntity.setName(entity.getName());
+    public Item getUpdatedEntityFromDto(Item entity, ItemUpdateDto dto) {
+        if (dto.getName() != null) {
+            entity.setName(dto.getName());
         }
 
-        if (updatedEntity.getDescription() == null) {
-            updatedEntity.setDescription((entity.getDescription()));
+        if (dto.getDescription() != null) {
+            entity.setDescription((dto.getDescription()));
         }
 
-        if (updatedEntity.getAvailable() == null) {
-            updatedEntity.setAvailable(entity.getAvailable());
+        if (dto.getAvailable() != null) {
+            entity.setAvailable(dto.getAvailable());
         }
 
-        return updatedEntity;
+        return entity;
     }
 }
